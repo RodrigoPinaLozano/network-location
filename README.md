@@ -1,0 +1,3 @@
+# Network Location
+
+This Raycast App extension provides a quick and easy way to change your network location. With just a few key strokes, you can switch between different network locations, each with its own set of network settings. This is especially useful for those who frequently travel between different locations, such as home, office, and public Wi-Fi hotspots. The extension utilizes the networksetup command-line tool to manage network locations and can be customized to fit your specific needs.
