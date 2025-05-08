@@ -1,50 +1,87 @@
-import { Action, ActionPanel, Color, Icon, List } from "@raycast/api";
-import { useEffect, useState } from "react";
-// import { runAppleScript } from "run-applescript";
-import { useExec } from "@raycast/utils";
-import { execSync } from "child_process";
-
-interface Location {
-  name: string;
-}
-
-const SwitchLocation = async (location: string) => {
-  await execSync(`/usr/sbin/networksetup -switchtolocation "${location}"`);
-};
+import { ActionPanel, Action, List, Toast, showToast } from "@raycast/api";
+import { useState, useEffect } from "react";
+import { runAppleScript } from "run-applescript";
+import { spawnSync } from "child_process";
 
 export default function Command() {
-  const [locations, setLocations] = useState<Location[]>([]);
-  const { data: currentLocation, revalidate } = useExec("/usr/sbin/networksetup", ["-getcurrentlocation"]);
-  const { data } = useExec("/usr/sbin/networksetup", ["-listlocations"], {});
+  const [locations, setLocations] = useState([]);
+  const [currentLocation, setCurrentLocation] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (data) {
-      setLocations(
-        data
-          .split("\n")
-          .filter((line) => line !== "")
-          .map((line) => ({ name: line }))
-      );
+    fetchLocations();
+  }, []);
+
+  async function fetchLocations() {
+    try {
+      const locationsProcess = spawnSync("/usr/sbin/networksetup", [
+        "-listlocations",
+      ]);
+      const currentLocationProcess = spawnSync("/usr/sbin/networksetup", [
+        "-getcurrentlocation",
+      ]);
+
+      if (locationsProcess.error || currentLocationProcess.error) {
+        throw new Error("Failed to fetch network locations");
+      }
+
+      const locationsList = locationsProcess.stdout
+        .toString()
+        .trim()
+        .split("\n");
+      const current = currentLocationProcess.stdout.toString().trim();
+
+      setLocations(locationsList);
+      setCurrentLocation(current);
+    } catch (error) {
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Failed to fetch locations",
+        message: String(error),
+      });
+    } finally {
+      setIsLoading(false);
     }
-  }, [data]);
+  }
+
+  async function switchLocation(location) {
+    setIsLoading(true);
+
+    try {
+      await runAppleScript(`
+        do shell script "/usr/sbin/networksetup -switchtolocation \\"${location}\\"" with administrator privileges
+      `);
+
+      setCurrentLocation(location);
+
+      await showToast({
+        style: Toast.Style.Success,
+        title: "Location Switched",
+        message: `Switched to ${location}`,
+      });
+    } catch (error) {
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Failed to Switch Location",
+        message: String(error),
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   return (
-    <List>
-      {locations.map((location, i) => (
+    <List isLoading={isLoading}>
+      {locations.map((location) => (
         <List.Item
-          key={i}
-          title={location.name}
-          icon={{ source: Icon.Map, tintColor: location.name === currentLocation ? Color.Blue : undefined }}
+          key={location}
+          title={location}
+          icon={location === currentLocation ? "✅" : "⭕️"}
           actions={
             <ActionPanel>
               <Action
-                title="Switch"
-                onAction={async () => {
-                  await SwitchLocation(location.name);
-                  setTimeout(() => {
-                    revalidate();
-                  }, 100);
-                }}
+                title="Switch Location"
+                onAction={() => switchLocation(location)}
               />
             </ActionPanel>
           }
