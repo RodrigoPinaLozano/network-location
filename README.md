@@ -1,6 +1,7 @@
 # Network Location
 
 A Raycast extension that provides a quick and easy way to change your macOS network location settings.
+based on https://github.com/eblanchette extension
 
 ## Features
 
