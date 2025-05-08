@@ -27,7 +27,7 @@ Based on https://github.com/eblanchette extension
 
 1. Clone this repository
 ```bash
-git clone https://github.com/owner/network-location.git
+git clone https://github.com/RodrigoPinaLozano/network-location.git
 cd network-location
 ```
 
