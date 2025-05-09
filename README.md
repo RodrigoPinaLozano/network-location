@@ -17,9 +17,11 @@ Based on https://github.com/eblanchette extension
 
 ## Development
 
+This extension is now built with JavaScript (.jsx) rather than TypeScript.
+
 ### Prerequisites
 
-- Node.js (v16 or later recommended)
+- Node.js (v18 or later recommended)
 - npm
 - Raycast application installed
 
@@ -49,6 +51,7 @@ This will open the extension in Raycast in development mode. Any changes you mak
 - `npm run build` - Build the extension
 - `npm run lint` - Run ESLint
 - `npm run fix-lint` - Fix ESLint errors automatically
+- `npm run publish` - Publish the extension to Raycast Store
 
 ## How It Works
 

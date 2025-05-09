@@ -6,7 +6,7 @@
  */
 
 import { ActionPanel, Action, List, Toast, showToast } from "@raycast/api";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { runAppleScript } from "run-applescript";
 import { spawnSync } from "child_process";
 
