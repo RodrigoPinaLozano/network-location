@@ -31,26 +31,17 @@ export default function Command() {
   async function fetchLocations() {
     try {
       // Get all available network locations
-      const locationsProcess = spawnSync(
-        NETWORKSETUP_PATH,
-        LIST_LOCATIONS_ARGS
-      );
+      const locationsProcess = spawnSync(NETWORKSETUP_PATH, LIST_LOCATIONS_ARGS);
 
       // Get the currently active network location
-      const currentLocationProcess = spawnSync(
-        NETWORKSETUP_PATH,
-        GET_CURRENT_LOCATION_ARGS
-      );
+      const currentLocationProcess = spawnSync(NETWORKSETUP_PATH, GET_CURRENT_LOCATION_ARGS);
 
       // Handle any errors from the commands
       if (locationsProcess.error || currentLocationProcess.error) {
         throw new Error("Failed to fetch network locations");
       }
 
-      const locationsList = locationsProcess.stdout
-        .toString()
-        .trim()
-        .split("\n");
+      const locationsList = locationsProcess.stdout.toString().trim().split("\n");
       const current = currentLocationProcess.stdout.toString().trim();
 
       setLocations(locationsList);
@@ -113,10 +104,7 @@ export default function Command() {
           icon={location === currentLocation ? "✅" : "⭕️"}
           actions={
             <ActionPanel>
-              <Action
-                title="Switch Location"
-                onAction={() => switchLocation(location)}
-              />
+              <Action title="Switch Location" onAction={() => switchLocation(location)} />
             </ActionPanel>
           }
         />
